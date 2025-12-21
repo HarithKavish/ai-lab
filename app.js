@@ -455,6 +455,45 @@ function updateAuthStatus(user) {
     }
 }
 
+// ===== Google Drive Access =====
+async function initializeGoogleDriveAccess(user) {
+    try {
+        if (!window.google?.accounts?.oauth2) {
+            console.debug('Google OAuth2 not available');
+            return;
+        }
+
+        const tokenClient = google.accounts.oauth2.initTokenClient({
+            client_id: GOOGLE_CLIENT_ID,
+            scope: DRIVE_SCOPE,
+            callback: async (tokenResponse) => {
+                if (tokenResponse.access_token) {
+                    setGoogleAccessToken(tokenResponse.access_token);
+                    setDriveStatus('online');
+                    localStorage.setItem(GOOGLE_ACCESS_TOKEN_KEY, tokenResponse.access_token);
+                    
+                    // Load chats from Drive
+                    const driveData = await loadChatsFromDrive();
+                    if (driveData && driveData.chats && driveData.chats.length > 0) {
+                        chats = driveData.chats;
+                        currentChatId = driveData.currentChatId;
+                        saveChatsToStorage();
+                        renderChatUI();
+                        renderSidebar();
+                    }
+                    updateAuthStatus(user);
+                }
+            }
+        });
+
+        // Request token with consent
+        tokenClient.requestAccessToken({ prompt: 'consent' });
+    } catch (err) {
+        console.debug('Drive access error:', err);
+        setDriveStatus('idle');
+    }
+}
+
 // ===== Model Loading =====
 async function initializeModel() {
     const statusEl = document.getElementById('model-status');
