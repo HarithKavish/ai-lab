@@ -40,7 +40,11 @@
                             <h1>AI Assistant</h1>
                             <p class="subtitle">Powered by DistilGPT2</p>
                         </div>
-                        <div id="googleSignInButton"></div>
+                        <div id="googleSignInButton" style="min-width: 100px;"></div>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 8px; margin-top: 8px; font-size: 12px;">
+                        <span id="auth-status" style="flex: 1;">Not signed in</span>
+                        <span id="sync-status" style="display: none; color: var(--accent);">Syncing...</span>
                     </div>
                     <div class="status" id="model-status">Loading model...</div>
                 </div>
