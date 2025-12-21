@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AI Chat</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://harithkavish.github.io/style.css" />
+    <link rel="stylesheet" href="styles.css" />
+    <link rel="icon" href="https://harithkavish.github.io/favicon.svg" type="image/svg+xml" />
+    <!-- Transformers.js -->
+    <script src="https://cdn.jsdelivr.net/npm/@huggingface/transformers@3.8.1"></script>
+    <!-- Google API Client -->
+    <script src="https://apis.google.com/js/api.js"></script>
+    <!-- Google Identity Services -->
+    <script src="https://accounts.google.com/gsi/client" async defer
+        onload="window.onGoogleLibraryLoad && window.onGoogleLibraryLoad();"></script>
+    <script src="https://harithkavish.github.io/script.js" defer></script>
+    <meta name="google-site-verification" content="SdeY2poCFNBw9AeQhlC5LVYL7NzT0lSyjJR8xMHkto8" />
+</head>
+
+<body>
+    <div id="sharedHeader"></div>
+    <main class="page">
+        <div class="ai-chat-wrapper">
+            <!-- Sidebar -->
+            <aside class="chat-sidebar">
+                <button class="new-chat-btn" id="new-chat-btn">+ New Chat</button>
+                <div class="chat-list" id="chat-list"></div>
+            </aside>
+
+            <!-- Main Chat Area -->
+            <div class="chat-container">
+                <div class="chat-header">
+                    <h1>AI Assistant</h1>
+                    <p class="subtitle">Powered by DistilGPT2</p>
+                    <div class="status" id="model-status">Loading model...</div>
+                </div>
+                <div id="messages" class="messages">
+                    <div class="welcome">
+                        <h2>Welcome to AI Chat</h2>
+                        <p>Ask me anything! I'll respond with thoughtful answers.</p>
+                    </div>
+                </div>
+                <form id="message-form" class="message-form">
+                    <input id="message-input" name="message" type="text" placeholder="Ask me something..."
+                        autocomplete="off" />
+                    <button type="submit" id="send-button">Send</button>
+                </form>
+            </div>
+        </div>
+    </main>
+    <div id="sharedFooter"></div>
+    <script defer src="app.js"></script>
+</body>
+
+</html>
