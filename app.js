@@ -790,12 +790,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Also check logout status periodically (fallback for same-tab logout)
     setInterval(() => {
-        const isStillLoggedIn = getStoredGoogleUser() !== null;
-        if (!isStillLoggedIn && chats.length > 0) {
-            console.log('Detected logout via polling');
+        const isLoggedIn = getStoredGoogleUser() !== null;
+        const hasLocalData = localStorage.getItem(CHATS_STORAGE_KEY) !== null;
+        
+        // If user logged out but we still have local data, clean it up
+        if (!isLoggedIn && hasLocalData) {
+            console.log('Detected logout via polling - cleaning up local data');
             handleLogout();
         }
-    }, 1000); // Check every second
+    }, 2000); // Check every 2 seconds
 });
 
 function handleLogout() {
@@ -812,8 +815,11 @@ function handleLogout() {
     localStorage.removeItem(GOOGLE_DRIVE_FOLDER_ID_KEY);
 
     // Reset UI completely
-    document.getElementById('messages').innerHTML = '';
-    document.getElementById('chat-list').innerHTML = '';
+    const messagesEl = document.getElementById('messages');
+    const chatListEl = document.getElementById('chat-list');
+    if (messagesEl) messagesEl.innerHTML = '';
+    if (chatListEl) chatListEl.innerHTML = '';
+    
     renderChatUI();
     renderSidebar();
     updateAuthStatus(null);
