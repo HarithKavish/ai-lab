@@ -705,6 +705,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Restore user session
     const storedUser = getStoredGoogleUser();
     if (storedUser) {
+        // User is signed in - load their chats
         googleAccessToken = localStorage.getItem(GOOGLE_ACCESS_TOKEN_KEY);
         driveFolderId = localStorage.getItem(GOOGLE_DRIVE_FOLDER_ID_KEY);
         if (googleAccessToken) {
@@ -732,7 +733,10 @@ document.addEventListener('DOMContentLoaded', () => {
             updateAuthStatus(storedUser);
         }
     } else {
-        loadChatsFromStorage();
+        // User is NOT signed in - clear all chats and show welcome
+        chats = [];
+        currentChatId = null;
+        localStorage.removeItem(CHATS_STORAGE_KEY);
         renderChatUI();
         renderSidebar();
         updateAuthStatus(null);
