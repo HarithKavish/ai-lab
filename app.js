@@ -36,7 +36,7 @@ function saveChatsToStorage() {
     localStorage.setItem(CHATS_STORAGE_KEY, JSON.stringify(data));
 }
 
-function createNewChat() {
+async function createNewChat() {
     const id = Date.now().toString();
     const newChat = {
         id,
@@ -48,9 +48,9 @@ function createNewChat() {
     chats.unshift(newChat);
     currentChatId = id;
     saveChatsToStorage();
-    // Sync to Drive if logged in
+    // Sync to Drive if logged in - AWAIT to prevent data loss on logout
     if (googleAccessToken) {
-        syncChatsToDrive().catch(err => console.warn('Drive sync failed:', err));
+        await syncChatsToDrive().catch(err => console.warn('Drive sync failed:', err));
     }
     return newChat;
 }
@@ -71,7 +71,7 @@ function openNewBlankChat() {
     renderSidebar();
 }
 
-function deleteChat(chatId) {
+async function deleteChat(chatId) {
     chats = chats.filter(chat => chat.id !== chatId);
     if (currentChatId === chatId) {
         if (chats.length > 0) {
@@ -81,20 +81,22 @@ function deleteChat(chatId) {
         }
     }
     saveChatsToStorage();
+    // Await sync to prevent data loss on logout
     if (googleAccessToken) {
-        syncChatsToDrive().catch(err => console.warn('Drive sync failed:', err));
+        await syncChatsToDrive().catch(err => console.warn('Drive sync failed:', err));
     }
     renderChatUI();
 }
 
-function renameChat(chatId, newTitle) {
+async function renameChat(chatId, newTitle) {
     const chat = chats.find(c => c.id === chatId);
     if (chat) {
         chat.title = newTitle;
         chat.updatedAt = new Date().toISOString();
         saveChatsToStorage();
+        // Await sync to prevent data loss on logout
         if (googleAccessToken) {
-            syncChatsToDrive().catch(err => console.warn('Drive sync failed:', err));
+            await syncChatsToDrive().catch(err => console.warn('Drive sync failed:', err));
         }
         renderSidebar();
     }
@@ -634,10 +636,10 @@ async function sendMessage(text) {
         chat.title = generateChatTitle([{ role: 'user', content: text }]);
     }
 
-    // Save to storage
+    // Save to storage - await sync to prevent data loss on logout
     saveChatsToStorage();
     if (googleAccessToken) {
-        syncChatsToDrive().catch(err => console.warn('Drive sync failed:', err));
+        await syncChatsToDrive().catch(err => console.warn('Drive sync failed:', err));
     }
 
     inputEl.disabled = true;
@@ -673,10 +675,10 @@ async function sendMessage(text) {
         messagesEl.appendChild(aiBubble);
         messagesEl.scrollTop = messagesEl.scrollHeight;
 
-        // Save to storage
+        // Save to storage - await sync to prevent data loss on logout
         saveChatsToStorage();
         if (googleAccessToken) {
-            syncChatsToDrive().catch(err => console.warn('Drive sync failed:', err));
+            await syncChatsToDrive().catch(err => console.warn('Drive sync failed:', err));
         }
         renderSidebar();
 
