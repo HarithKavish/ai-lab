@@ -18,7 +18,7 @@ A lightweight, fast AI chat application powered by **DistilGPT2** running entire
 ## 🚀 Quick Start
 
 ### Live Demo
-Visit: [harithkavish.github.io/ai/](https://harithkavish.github.io/ai/)
+Visit: [harithkavish.github.io/ai-lab/](https://harithkavish.github.io/ai-lab/)
 
 ### Local Development
 
@@ -260,3 +260,4 @@ MIT License - feel free to use this project for personal or commercial purposes.
 ---
 
 **Made by Harith Kavish** | [Portfolio](https://harithkavish.github.io) | [GitHub](https://github.com/HarithKavish)
+
