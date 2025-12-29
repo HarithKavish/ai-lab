@@ -60,6 +60,20 @@
         </div>
     </main>
     <div id="sharedFooter"></div>
+    <script defer>
+        document.addEventListener('DOMContentLoaded', () => {
+            if (window.HarithShell) {
+                HarithShell.renderHeader({
+                    target: '#sharedHeader',
+                    brand: { title: 'AI Chat', tagline: 'Assistant powered by DistilGPT2' }
+                });
+                HarithShell.renderFooter({ target: '#sharedFooter', text: 'Harith Kavish' });
+                if (typeof initGoogleSignInButton === 'function') {
+                    initGoogleSignInButton();
+                }
+            }
+        });
+    </script>
     <script defer src="app.js"></script>
 </body>
 

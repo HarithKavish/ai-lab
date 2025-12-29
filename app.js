@@ -798,7 +798,7 @@ document.addEventListener('DOMContentLoaded', () => {
     setInterval(() => {
         const isLoggedIn = getStoredGoogleUser() !== null;
         const hasLocalData = localStorage.getItem(CHATS_STORAGE_KEY) !== null;
-        
+
         // If user logged out but we still have local data, clean it up
         if (!isLoggedIn && hasLocalData) {
             console.log('Detected logout via polling - cleaning up local data');
@@ -825,7 +825,7 @@ function handleLogout() {
     const chatListEl = document.getElementById('chat-list');
     if (messagesEl) messagesEl.innerHTML = '';
     if (chatListEl) chatListEl.innerHTML = '';
-    
+
     renderChatUI();
     renderSidebar();
     updateAuthStatus(null);
