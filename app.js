@@ -15,7 +15,6 @@ let currentChatId = null;
 let googleAccessToken = null;
 let driveFolderId = null;
 let driveStatus = 'idle'; // idle, syncing, online, error
-let googleButtonRetries = 0;
 
 // ===== Chat Management =====
 function loadChatsFromStorage() {
@@ -131,87 +130,6 @@ function storeGoogleUser(user) {
 
 function clearStoredGoogleUser() {
     localStorage.removeItem(GOOGLE_USER_STORAGE_KEY);
-}
-
-function renderSignedInButton(user) {
-    const googleButtonTarget = document.getElementById('googleSignInButton');
-    if (!googleButtonTarget) return;
-    googleButtonTarget.innerHTML = `
-        <button type="button" class="signed-in-button" aria-label="Signed in as ${user.name}">
-            <img src="${user.picture || 'https://www.gravatar.com/avatar/?d=mp'}" alt="${user.name} avatar"
-                class="signed-in-button__avatar" loading="lazy" />
-            <span class="signed-in-button__name">${user.name}</span>
-        </button>`;
-    const signInBtn = googleButtonTarget.querySelector('button');
-    signInBtn?.addEventListener('click', () => {
-        clearStoredGoogleUser();
-        initGoogleSignInButton();
-    });
-}
-
-function handleGoogleCredentialResponse(credentialResponse) {
-    console.log('Google OAuth credential response', credentialResponse);
-    const profile = extractProfileFromCredential(credentialResponse?.credential);
-    const user = {
-        name: profile?.name || 'Signed in',
-        picture: profile?.picture || '',
-        email: profile?.email || ''
-    };
-    storeGoogleUser(user);
-    renderSignedInButton(user);
-    updateAuthStatus(user);
-    // Initialize Drive sync after sign in
-    initializeGoogleDriveAccess(user);
-}
-
-function initGoogleSignInButton() {
-    const googleButtonTarget = document.getElementById('googleSignInButton');
-    if (!googleButtonTarget) {
-        return;
-    }
-    const storedProfile = getStoredGoogleUser();
-    if (storedProfile) {
-        renderSignedInButton(storedProfile);
-        return;
-    }
-    if (!window.google?.accounts?.id) {
-        if (googleButtonRetries < 6) {
-            googleButtonRetries += 1;
-            window.setTimeout(initGoogleSignInButton, 250);
-        }
-        return;
-    }
-    googleButtonTarget.innerHTML = '';
-    google.accounts.id.initialize({
-        client_id: GOOGLE_CLIENT_ID,
-        callback: handleGoogleCredentialResponse
-    });
-    google.accounts.id.renderButton(
-        googleButtonTarget,
-        {
-            theme: 'outline',
-            size: 'medium',
-            type: 'standard',
-            shape: 'pill'
-        }
-    );
-    googleButtonTarget.dataset.initialized = 'true';
-}
-
-function extractProfileFromCredential(credential) {
-    if (!credential) return null;
-    try {
-        const payload = credential.split('.')[1];
-        const base64 = payload.replace(/-/g, '+').replace(/_/g, '/');
-        const decoded = decodeURIComponent(atob(base64)
-            .split('')
-            .map(char => `%${('00' + char.charCodeAt(0).toString(16)).slice(-2)}`)
-            .join(''));
-        return JSON.parse(decoded);
-    } catch (err) {
-        console.warn('Failed to decode Google credential', err);
-        return null;
-    }
 }
 
 async function getGoogleAccessToken() {
@@ -747,23 +665,24 @@ document.addEventListener('DOMContentLoaded', () => {
     // Initialize model
     initializeModel();
 
-    // Render header and footer from HarithShell
-    if (window.HarithShell) {
-        HarithShell.renderHeader({
-            target: '#sharedHeader',
-            brand: {
-                title: 'Harith Kavish',
-                tagline: 'AI-Driven Systems Architect & Creative Director'
-            }
-        });
-        HarithShell.renderFooter({
-            target: '#sharedFooter',
-            text: 'Harith Kavish'
-        });
-    }
+    // Header/Footer are Web Components (<harith-header>, <harith-footer>) - no JS init needed
+    // Listen for auth changes from the Design System component
+    document.addEventListener('harith-auth-change', (e) => {
+        const user = e.detail?.user;
+        if (user) {
+            initializeGoogleDriveAccess(user);
+            updateAuthStatus(user);
+        } else {
+            handleLogout();
+        }
+    });
 
-    // Initialize Google Sign-In button
-    initGoogleSignInButton();
+    // Check if already logged in on page load
+    const storedUser = getStoredGoogleUser();
+    if (storedUser) {
+        initializeGoogleDriveAccess(storedUser);
+        updateAuthStatus(storedUser);
+    }
 
     // New chat button
     document.getElementById('new-chat-btn').addEventListener('click', () => {
