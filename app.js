@@ -677,13 +677,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // Check if already logged in on page load
-    const storedUser = getStoredGoogleUser();
-    if (storedUser) {
-        initializeGoogleDriveAccess(storedUser);
-        updateAuthStatus(storedUser);
-    }
-
     // New chat button
     document.getElementById('new-chat-btn').addEventListener('click', () => {
         openNewBlankChat();
