@@ -49,7 +49,7 @@ http://localhost:5500
 ## 🔧 Technology Stack
 
 - **Language**: Vanilla JavaScript (ES6+)
-- **AI Model**: DistilGPT2 (distilbert-base-cased)
+- **AI Model**: DistilGPT2 ([Xenova/distilgpt2](https://huggingface.co/Xenova/distilgpt2))
 - **Model Loading**: Transformers.js + ONNX Runtime
 - **CSS**: Custom CSS with glassmorphism effects
 - **Storage**: localStorage + Google Drive API
